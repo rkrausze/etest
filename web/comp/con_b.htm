@@ -1,0 +1,550 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <script src="../data/ef_store.js" type="text/javascript">
+  </script>
+  <script src="../data/ef_restore.js" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+    document.writeln('<sc'+'ript src="../../etest_data.php'+top.location.search+'" type="text/javascript"></sc'+'ript>');
+  </script>
+  <script src="../data/s2_code.js.php" type="text/javascript">
+  </script>
+</head>
+<body bgcolor="#336699" text="#DDFDF3" style="margin-top:4px; margin-bottom:2px">
+
+BASIC-Version
+
+</body>
+
+<script type="text/javascript">
+//<! -- Hide script
+// study2000, 19.08.2002, TU Dresden, R. Krauße, Version 0.61 Basis-Variante ohne DHTML
+// http://linus.psych.tu-dresden.de/Stupla/study2000
+
+// display functions ------------------------------------------------
+
+var PlopInShow = 0;
+
+function HistoryPlop(duration, lastTime, nr, addText, pm)
+{
+  var sOpen1 = "", sOpen2 = "";
+  if ( nr != -1 )
+  {
+    sOpen1 = '<A href="javascript:SwitchOpen(' + nr + ')" target="control">';
+    sOpen2 = '</A>';
+  }
+  if ( duration > 0 )
+  {
+    var When = new Date();
+    When.setTime(lastTime*1000);
+    return sOpen1 + '<IMG src="' + base + '../data/dot1' + pm + '.gif" width="17" height="13" alt="Bearbeitet: ' + Dauer(duration) +
+      ', zuletzt ' + When.getHours() + ':' + TN(When.getMinutes()) + ' am ' +
+      TN(When.getDate()) + '.' + TN(When.getMonth()+1) + '.' + When.getYear() + addText + '" border=0>\r\n' + sOpen2;
+  }
+  else
+    return sOpen1 + '<IMG src="'+base+'../data/dot2' + pm + '.gif" width="17" height="13" alt="Unbearbeitet" border=0>\r\n' + sOpen2;
+}
+
+function ContensEntry(nr, bold, deep, pm, id, sGit)
+{
+  var s = Name[nr];
+  for (var i=0; i < s.length; i++)
+    if ( s.charAt(i) == '(' )
+    {
+      while ( i > 0 && s.charAt(i-1) == ' ' )
+        i--;
+      s = s.slice(0, i);
+      break;
+    }
+  var size = 3-deep;
+  if ( size < 2 )
+    size = 2;
+  if ( nr == curNr )
+    s = '<FONT face="Arial" color="#CC0000" size="' + size + '">'+s+'</FONT>';
+  else
+    s = '<FONT face="Arial" size="' + size + '">'+s+'</FONT>';
+  if ( bold )
+    s = '<B>'+s+'</B>';
+  // Name
+  var s1 = '<TR>';
+  for (var j = 0; j < sGit.length; j++)
+    s1 += (j ? '>&nbsp;</TD>' : '') + '<TD width=15 background="' + base + '../data/g' + sGit.charAt(j) + '.gif"';
+  s1 += ' valign="top">' +
+      HistoryPlop(TopicDuration[nr], TopicLast[nr], nr, "", pm + SLP_L(M_TEXT, nr, 0)) +
+      '</TD><TD colspan="' + (10-deep) + '" valign="bottom" align="left"><A href="javascript:top.control.SetTopic(' + nr + ')" ' +
+      MouseTip(Name[nr]) +'>' +
+      s + '</A></TD></TR>\r\n';
+  return s1;
+}
+
+function ShowCont()
+{
+  // calculate LastDeep
+  for (var i = 0; i <= curNr; i++)
+    LastDeep[Deep[i]] = i;
+  for (var i = (curNr == -1) ? 0 : Deep[curNr]+1; i <= MAX_DEEP; i++)
+    LastDeep[i] = -1;
+  // write contens
+  if ( !top.data.contens || !top.data.contens.document )
+    return;
+//!  LastScrollTop = top.data.contens.pageYOffset;
+  var doc6 = top.data.contens.document;
+  doc6.close();
+  doc6.clear();
+  doc6.open();
+  doc6.writeln('<HTML>'+NO_LINKDEKO,
+    '<body bgcolor="#F5F5DC" link="#003366" vlink="#003366" style="margin-top:4px; margin-bottom:4px;">',
+    '<TABLE cellpadding="1" cellspacing="0" border="0">',
+    '<TR>');
+  for (var i = 0; i <= 10; i++)
+    doc6.write('<TD width="15" height="1"><B></B></TD>');
+  doc6.writeln('<TD height="1"><B></B></TD></TR>');
+  var deep = -1;
+  var sGit;
+  var LastFlag = false;
+  for (var i = 0; i < nTopic; i++)
+  {
+    var LT = (LastDeep[Deep[i]] == i) ? 1 : 0;
+    if ( Deep[i] <= deep + 1 )
+    {
+      if ( (LT || IsOpen[i]) && i != KeepCurClosed1 )
+        deep = Deep[i];
+      else if ( Deep[i] <= deep )
+        deep = Deep[i]-1;
+      var pm = "";
+      if ( i+1 < nTopic && Deep[i+1] > Deep[i] )
+        pm = ( deep == Deep[i] ) ? "m" : "p";
+      if ( Deep[i] == 0 )
+        sGit = (pm == "m") ? "3" : "0";
+      else
+        sGit = sGit.substr(0, Deep[i]-1)+(aLastTopic[i] == 1 ? "1" : "5")+(pm == "m" ? "6" : "2");
+      var id = "";
+      if ( i == curNr )
+      {
+        id = 'cur';
+        LastFlag = (pm == "m") ? true : false;
+      }
+      else if ( LastDeep[0] == i )
+        id = 'cap';
+      else if ( LastFlag && (i == nTopic-1 || Deep[i+1] <= Deep[curNr]) )
+      {
+        id = 'last';
+        LastFlag = false;
+      }
+      doc6.write(ContensEntry(i, LT, Deep[i], pm+(GetTopicHaken(i)? "h" :""), id, sGit));
+      sGit1 = "";
+      for (var j = 0; j < sGit.length; j++)
+        sGit1 += ((1*sGit.charAt(j)) > 2) ? "4" : "0";
+      sGit = sGit1;
+    }
+  }
+  doc6.writeln('</TABLE>\r\n<BODY></HTML>');
+  doc6.close();
+//!  InView();
+  KeepCurClosed2 = KeepCurClosed1;
+  KeepCurClosed1 = -1;
+}
+
+
+/*var LastScrollTop = 0;
+
+function InView()
+{
+  if ( !top.data.contens )
+    return;
+  if ( !top.data.contens.document.Cont.document.cur )
+    setTimeout("InView()", 1000);
+  else
+  {
+  //  top.data.contens.scrollTo(0, top.data.contens.document.Cont.document.cur.pageY-80);
+    var win = top.data.contens;
+    var doc = win.document.Cont.document;
+    var yCur = doc.cur.pageY -18;
+    var yCap = ( doc.cap ) ? doc.cap.pageY -18 : yCur;
+    var yLast = ( doc.last ) ? doc.last.pageY+20 : yCur + 20;
+    var h = win.innerHeight;
+    var p = LastScrollTop;
+    if ( yLast - yCap < h )
+    {
+      if ( p > yCap || p+h < yLast )
+        win.scrollTo(0, LastScrollTop = yCap - (h - yLast + yCap) / 2);
+      else
+        win.scrollTo(0, LastScrollTop = p);
+    }
+    else if ( yLast - yCur < h )
+      if ( p > yCur || p+h < yLast )
+        win.scrollTo(0, LastScrollTop = yLast-h+20);
+      else
+        win.scrollTo(0, LastScrollTop = p);
+    else
+      win.scrollTo(0, LastScrollTop = yCur);
+  }
+}*/
+
+function ShowMat()
+{
+  if ( !top.data.material  || !top.data.material.document )
+    return;
+  var doc4 = top.data.material.document;
+  doc4.close();
+  doc4.clear();
+  doc4.open();
+  doc4.writeln("<HTML>", NO_LINKDEKO, '<BODY bgcolor="#F5F5DC" link="#003366" vlink="#003366" style="margin:0px;">',
+    '<TABLE border="0"  cellpadding="0" cellspacing="0">');
+  doc4.writeln(
+    SecondBookEntry(endTest, M_END, endTest));
+  doc4.writeln('</TABLE>\r\n</BODY></HTML>');
+  doc4.close();
+  return 1;
+}
+
+function ShowTitle()
+{
+  //while ( !top.data.title );
+  var doc5 = top.data.title.document;
+  doc5.close();
+  doc5.clear();
+  doc5.open();
+  doc5.writeln('<HTML><BODY bgcolor="#A4C2E0" style="margin:0px;">\r\n',
+    '<TABLE border="0" cellpadding="0" cellspacing="0" width="100%" valign="middle">\r\n',
+    '<tr><td valign="middle"><FONT size="4" face="Arial" color="',
+    ((Mode % M_MEDIAOPEN) <= M_TEXT) ? '#CC0000' : '#228B22',
+    '"><B>',
+    TitleText(),
+    '</B></FONT></td>\r\n',
+    ( !top.data.contens ) ?
+      '<td align="right" valign="middle"><font size="3" face="Arial">' + Title + ' &nbsp; </font></td>\r\n' : '',
+    '<TD width="80px" align="right">',
+    '<A href="', base, '../S2_Help/user_doc.htm" target="_blank" >',
+    '<img src="', base, '../data/help.gif" width="26" height="25" border=0 alt="Hilfe zu study2000"></A>&nbsp;',
+    '<A href="http://www.studierplatz2000.tu-dresden.de/" target="_blank">',
+    '<img src="', base, '../data/logo.gif" width="40" height="25" border=0 alt="Zur study2000 Homepage"></A>',
+    '</TD>\r\n</TR></TABLE></BODY></HTML>');
+  doc5.close();
+  return 1;
+}
+
+function Button(text, action, width, colorStyle, comment)
+{
+  var Com = comment.split("|");
+  var s =
+    '<TD bgcolor="' +  ButtonBgColor[colorStyle] + '">' +
+      '<SPAN style="border: 3px outset ' + ButtonBgColor[colorStyle] + ';">' +
+        '<A href="javascript:' + action + '" target="control" title="' + comment +
+          '" style="color:' + ButtonFontColor[colorStyle] + ';font:bold 14px ' +
+          ((Com.length < 2) ? "Arial" : Com[1]) + ';text-decoration:none;" ' +
+          'onMouseOver="status=\'' + Com[0] + '\'; return true;" ' +
+          'onMouseOut="status=\'\'; return true;">&nbsp;' +
+          text +
+        '&nbsp;</A>' +
+      '</SPAN>' +
+    '</TD>';
+  return s;
+}
+
+function GraphicButton(source, action, colorStyle, comment)
+{
+  var s =  '<TD><A href="javascript:' + action +'" target="control"><img src="' + base + '../data/l' +
+    source + '.gif" alt="' + comment + '" align="absmiddle" border="0"></A></TD>';
+  return s;
+}
+
+var ButtonSep =  '<TD>&nbsp;</TD>';
+
+// control functions -----------------------------------------------
+
+function SetTopic(nr, mode)
+{
+  curNr = nr;
+  if ( Mode == M_MATERIAL )
+  {
+/*!    for (var i = 0; i < top.data.display.document.layers.length; i++)
+      if ( top.data.display.document.layers[i].name == "mark" + curNr )
+      {
+        top.data.display.scrollTo(0, top.data.display.document.layers[i].pageY-80);
+        break;
+      }*/
+    setTimeout("ShowCont()", 50);
+  }
+  else
+  {
+    if ( mode )
+      Mode = mode;
+    SetTopicText(nr);
+  }
+}
+
+var xd, yd;
+function SwitchContMode()
+{
+  xd = -1;
+  ContMode = (ContMode + 1) % 3;
+  if ( OnLoading == 1)
+  {
+    var awin = window.open("", "data");
+    var doc = awin.document;
+  }
+  else
+  {
+    if ( top.data.display )
+    {
+//!      xd = top.data.display.pageXOffset;
+//!      yd = top.data.display.pageYOffset;
+    }
+//!    if ( top.data.contens )
+//!      ContWidth = top.data.contens.innerWidth;
+//!    if ( top.data.material )
+//!      MatHeight = top.data.material.document.MatButtons.clip.height + 15;
+    var doc = top.data.document;
+  }
+  doc.close();
+  doc.clear();
+  doc.open();
+  doc.writeln(
+    '<HTML>\r\n',
+    '<HEAD></HEAD>\r\n');
+  if ( ContMode == 0)
+    doc.writeln(
+      '<frameset cols="', ContWidth, ', *" border=1 bordercolor="#FFFFFF">\r\n',
+      '  <frameset rows="40,*,', MatHeight, '" bordercolor="#F5F5DC">\r\n',
+      '     <frame src="' + base + '../data/dummy.htm" name="topic" scrolling=no>\r\n',
+      '     <frame src="' + base + '../data/dummy.htm" name="contens">\r\n',
+      '     <frame src="' + base + '../data/dummy.htm" name="material">\r\n',
+      '  </frameset>\r\n',
+      '  <frameset rows="40,*">\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>\r\n');
+  else if ( ContMode == 1 )
+    doc.writeln(
+      '<frameset cols="*, ', ContWidth, '" border=1 bordercolor="#FFFFFF">\r\n',
+      '  <frameset rows="40,*">\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n',
+      '  </frameset>\r\n',
+      '  <frameset rows="40,*,', MatHeight, '"  bordercolor="#F5F5DC">\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="topic" scrolling=no>\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="contens">\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="material">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>\r\n');
+  else
+    doc.writeln(
+      '  <frameset rows="40,*"  border=0 frameborder=0 framespacing=0>\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n',
+      '  </frameset>\r\n');
+  doc.writeln('</HTML>\r\n');
+  doc.close();
+  if ( OnLoading == 0 )
+    Mode %= M_MEDIAOPEN;
+  window.setTimeout("SwitchContModeFinish()", 500);
+  if ( OnLoading == 1 )
+    OnLoading = 0;
+  else
+    setTimeout("ShowButtons()", 40);
+}
+
+function SwitchContModeFinish()
+{
+  if ( !top.data.display || !top.data.title ||
+     (ContMode != 2 && (!top.data.material || !top.data.material.document ||
+     !top.data.topic || !top.data.topic.document ||
+     !top.data.contens || !top.data.contens.document )) )
+  {
+    setTimeout("SwitchContModeFinish()", 500);
+    return;
+  }
+  setTimeout("ShowCont()", 100);
+  setTimeout("ShowTitle()", 200);
+  setTimeout("ShowDisplay()", 300);
+  setTimeout("ShowMat()", 400);
+  // topic
+  if ( top.data.topic )
+  {
+    var doc1 = top.data.topic.document;
+    doc1.close();
+    doc1.clear();
+    doc1.open();
+    doc1.writeln('<HTML>'+NO_LINKDEKO + '<BODY bgcolor="#A4C2E0" link="#003366" vlink="#003366" style="margin-top:4px; margin-bottom:4px;">',
+     '<A href="javascript:SwitchAllOpen()" target="control" title="Verzeichnis maximieren/minimieren" ',
+     'onMouseOver="status=\'Verzeichnis maximieren/minimieren\'; return true;" onMouseOut="status=\'\'; return true;">',
+     '<FONT size="3" face="Arial"><NOBR><B>',
+      Title, '</B></NOBR></FONT></A>',
+     '</BODY></HTML>');
+    doc1.close();
+  }
+/*!  if ( xd != -1 )
+    top.data.display.scrollTo(xd, yd);*/
+  setTimeout("ShowButtons()", 500);
+}
+
+var LinkCount = 0;
+
+function StartMedia(type, nr, i)
+{
+  MedMode = type;
+  MedTopic = nr;
+  MedI = i;
+  if ( curNr != nr && M_TEXT <= Mode && Mode < M_TOCMEDIA )
+  {
+    MedListMode = -1;
+    curNr = nr;
+    ShowCont();
+  }
+  var src = GetMedia(type, nr)[i][0];
+  if ( (Mode != M_MATERIAL || type != M_EXPERIMENT) && !IsHtml(src) )
+  {
+    Mode = type+M_MEDIAOPEN;
+    if ( !(GetMediaStyle(type) & 2) )
+      ShowButtons();
+    ShowTitle();
+  }
+  AddProt("");
+  InitProt(Mode, nr, i);
+  src = GetMedia(type, nr)[i][0];
+  if ( src == "" )
+  {
+    StartEmptyMedia(type, nr, i);
+    return;
+  }
+  else if ( src.substr(0,2) == "##" )
+  {
+    var Task = src.substr(2).split("#");
+    VisitMedia(Task[0], Task[1], Task[2]);
+    return;
+  }
+  if ( GetMedia(type, nr)[i][0].search(/:/) == -1 )
+    src = base + GetMedia(type, nr)[i][0];
+  if ( Mode == M_FOLIE+M_MEDIAOPEN && FolieMatch != 0 && IsGraphic(src) )
+  {
+    var doc = (GetMediaStyle(type) & 2) ? self.open("", GetMediaTitle(type)).document : top.data.display.document;
+    var xl = top.data.display.innerWidth;
+    var yl = top.data.display.innerHeight;
+    doc.close();
+    doc.clear();
+    doc.open();
+    doc.writeln(DISPLAY_HEADER,
+      '<img src="', src,
+      (FolieMatch % 2 == 1) ? '" width="'+(xl-20) : "",
+      (FolieMatch >= 2) ? '" height="'+(yl-20) : "",
+      '" style="position:absolute;top:5;left:5;"></body>');
+    doc.close();
+  }
+  else if ( Mode == M_LINK+M_MEDIAOPEN || Mode == M_LINK )
+  {
+    window.open(src, "link"+(LinkCount++));
+  }
+  else
+    window.open(src, GetMediaStyle(type) & 2 ? GetMediaTitle(type) : "display");
+  return false;
+}
+
+// service function ----------------------------------------------------------
+
+var sdisplay;
+
+function InsertFonts(s, addFont)
+{
+  var s2 = s;
+  if ( addFont != "" )
+  {
+    s2 = s2.replace(/X>/g, "X>"+addFont);
+    if ( addFont.search(/<SPAN/i) != -1 )
+      s2 = s2.replace(/<Y>/g, "</SPAN><Y>");
+    else
+      s2 = s2.replace(/<Y>/g, "</FONT><Y>");
+  }
+  return s2;
+}
+
+function ExplodeString(s)
+{
+  s = unescape(s);
+  var res = s;
+  res = res.replace(/<Y>/g, '');
+  res = res.replace(/<X\d*X>/g, '');
+  return res;
+}
+
+function PlaneCode()
+{
+  return '';
+}
+
+function TopicHook()
+{
+}
+
+// aufgabe ---------------------------------------------------------------------------------
+
+function HintWindow(title, text)
+{
+  NewDia(title,
+    '<FONT color="#CC0000"><B>' + title + ':</B></FONT><P>' +
+    text +
+    '<P align=right>\r\n' +
+    '<INPUT type="BUTTON" value="Schließen" onClick="self.close()"></P>',
+    " ",
+    400, 180, 200, 200, -1);
+  DiaWin.focus();
+}
+
+// Common dialog window ------------------------------------------------------------
+
+var DiaWin;
+
+var DoFocus = -1;
+
+function NewDia(title, body, script, width, height, x, y, doFocus)
+{
+  var Form =
+    '<FONT face="Arial"><FORM name="frm" method="POST">\r\n' +
+    body + '\r\n</FORM></FONT>\r\n';
+  DiaWin = window.open("", "DiaWin", "resizable=yes,width=" + width + ",height=" + height + ",resizable=yes,screenX=" + x + ",screenY=" + y); //(script == "") ? "width=" + width + ",height=" + height : "resizable=yes,screenX=" + x + ",screenY=" + y);
+  var doc = DiaWin.document;
+  doc.close();
+  doc.clear();
+  doc.open();
+  doc.writeln(
+    '<HTML><HEAD><TITLE>' + title + '</TITLE>',
+    '</HEAD>\r\n',
+    DIALOG_HEADER,
+      '<div id="dia">', Form,
+      '</div>\r\n',
+      '<SC', 'RIPT type="text/javascript">\r\n',
+      '  var fm = document.frm;\r\n',
+ //     '  var ReturnWin = "1";\r\n',
+ //     (script == "" ) ? "" : '  window.resizeTo(document.dia.clip.width+20, document.dia.clip.height+10);\r\n' +
+ //     '  window.moveTo(20, screen.height-document.dia.clip.height-140);\r\n',
+      script,
+      '\r\n',
+      '</SC', 'RIPT></BODY>',
+      '</HTML>');
+  doc.close();
+  DoFocus = doFocus;
+}
+
+// initialisieren -----------------------------------------------------------------
+
+var base = top.control.location.href;
+var l = base.length;
+while ( base.charAt(l-1) != '/' && base.charAt(l-1) != '\\' && l > 0 )
+{
+  base = base.substr(0, l-1);
+  l--;
+}
+
+var CSS_TEXT =
+  '<style type="text/css">\r\n' +
+  ' body { font-family:Arial; color:#003366; background-color:#F5F5DC }\r\n' +
+  '</style>\r\n';
+
+var bas = 1;
+Init();
+
+// End script hiding --></script>
+</html>

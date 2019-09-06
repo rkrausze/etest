@@ -1,0 +1,44 @@
+Version 2016012100 - Fork to 2.7
+=========================
+* Fix for Moodle 2.7
+
+-- SVN Moodle 2.x 
+
+Version 2016010400
+=========================
+* Fix for encoding of print form
+
+Version 2013112600
+=========================
+* Fix for result-colums in etest_action
+
+Version 2013101400
+=========================
+* general settings to switch off use of Moodle designs for embedded pages
+
+Version 2013093000
+=========================
+* Fix for archivation
+* missig strings added
+
+Version 2013092400
+=========================
+* Fixes for index.php
+* Improved layout of embedded pages
+
+Version 2013073000
+=========================
+* Fix for Deletion of exercises in blocks
+
+Version 2013072500
+=========================
+* Further fixes for PostGres-DB (empty id's as '') (grades)
+
+Version 2013071400
+=========================
+* Fixes for PostGres-DB (empty id's as '')
+
+Version 2013062100
+=========================
+* backup/restore implemented
+* minor changes to satisfy Codechecker

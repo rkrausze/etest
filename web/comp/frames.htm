@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<LINK REL="SHORTCUT ICON" HREF="../data/favicon.ico">
+	<title id="title">ETest - study 2000</title>
+</head>
+
+<script type="text/javascript">
+  if ( document.all && document.all.tags("title")[0].innerHTML )
+  {
+    window.moveTo(0,0);
+    window.resizeTo(screen.availWidth, screen.availHeight);
+    document.write(
+      '<frameset rows="*,', (screen.availWidth < 900 ) ? 64 : 42 ,
+      '" border=0 frameborder=0 framespacing=0>\r\n',
+      '  <frame src="../data/dummy.htm" name="data">\r\n',
+      '  <frameset cols="*,2">\r\n',
+      '    <frame src="con_s.htm" name="control">\r\n',
+      '    <frame src="../data/dummy.htm" name="send">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>');
+  }
+  else if ( document.layers && navigator.appVersion.substring(0,4) != "4.05")
+    document.write(
+      '<frameset rows="*,', (screen.availWidth < 900 ) ? 64 : 42 ,
+      '" border=0 frameborder=0 framespacing=0>\r\n',
+      '  <frame src="../data/dummy.htm" name="data">\r\n',
+      '  <frameset cols="*,2">\r\n',
+      '    <frame src="con_l.htm" name="control">\r\n',
+      '    <frame src="../data/mail.htm" name="send" scrolling="no">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>');
+  else if ( document.getElementById && navigator.userAgent.indexOf('Opera') == -1 )
+  {
+    window.moveTo(0,0);
+    window.resizeTo(screen.availWidth, screen.availHeight);
+    document.write(
+      '<frameset rows="*,', (screen.availWidth < 900 ) ? 64 : 42 ,
+      '" border=0 frameborder=0 framespacing=0>\r\n',
+      '  <frame src="../data/dummy.htm" name="data">\r\n',
+      '  <frameset cols="*,2">\r\n',
+      '    <frame src="con_d.htm" name="control">\r\n',
+      '    <frame src="../data/dummy.htm" name="send" scrolling="no">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>');
+  }
+  else if ( document.getElementById && navigator.userAgent.indexOf('Opera') != -1 )
+  {
+    window.moveTo(0,0);
+    window.resizeTo(screen.availWidth, screen.availHeight);
+    document.write(
+      '<frameset rows="*,', (screen.availWidth < 900 ) ? 64 : 42 ,
+      '" border=0 frameborder=0 framespacing=0>\r\n',
+      '  <frame src="../data/dummy.htm" name="data">\r\n',
+      '  <frameset cols="*,0,2">\r\n',
+      '    <frame src="../data/dummy.htm" name="buttons">\r\n',
+      '    <frame src="con_o.htm" name="control" scrolling="no">\r\n',
+      '    <frame src="../data/dummy.htm" name="send" scrolling="no">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>');
+  }
+  else
+  {
+    window.moveTo(0,0);
+    window.resizeTo(screen.availWidth, screen.availHeight);
+    document.write(
+      '<frameset rows="*,', (screen.availWidth < 900 ) ? 64 : 42 ,
+      '" border=0 frameborder=0 framespacing=0>\r\n',
+      '  <frame src="../data/dummy.htm" name="data">\r\n',
+      '  <frameset cols="*,0,2">\r\n',
+      '    <frame src="../data/dummy.htm" name="buttons">\r\n',
+      '    <frame src="con_b.htm" name="control" scrolling="no">\r\n',
+      '    <frame src="../data/dummy.htm" name="send" scrolling="no">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>');
+  }
+</script>
+</html>

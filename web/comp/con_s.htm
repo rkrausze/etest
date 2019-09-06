@@ -1,0 +1,784 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Testtitle to ensure it's IE</title>
+  <script src="../data/ef_store.js" type="text/javascript">
+  </script>
+  <script src="../data/ef_restore.js" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+    document.writeln('<sc'+'ript src="../../etest_data.php'+top.location.search+'" type="text/javascript"></sc'+'ript>');
+  </script>
+  <script src="../data/s2_code.js.php" type="text/javascript">
+  </script>
+</head>
+<body bgcolor="#336699" text="#DDFDF3" style="margin-top:4px; margin-bottom:2px; margin-left:5px; margin-right:5px;">
+
+<div id=Buttons>
+  study 2000
+</div>
+
+</body>
+
+<script type="text/javascript"><!-- Hide script
+// study2000, 19.08.2002, TU Dresden, R. Krauße, Version 0.61 ALL-VERSION
+// http://linus.psych.tu-dresden.de/Stupla/study2000
+
+// display functions ------------------------------------------------
+
+var Is4 = (navigator.appVersion.indexOf("MSIE 4") != -1);
+
+function HistoryPlop(duration, lastTime, nr, addText, pm)
+{
+  var pState = (nr != -1 ) ? GetStateNr(nr) : 2;
+  var sOpen = "";
+  if ( nr != -1 && pState <= 2 )
+    sOpen = ' onClick="top.control.SetTopic(' + nr + ')"';
+  var sComment = "Text";
+  if ( State >= 1 && Nr2Ex[nr] != -1 )
+    sComment = "Click here to open this question";
+  return '<IMG src="' + base + '../data/dot'+pState + pm+'.gif" width="17" height="13" alt="'+ sComment +'"' + sOpen + '>\r\n';
+}
+
+function ContensEntry(nr, bold, deep, pm, id, sGit)
+{
+  var s = Name[nr];
+  for (var i=0; i < s.length; i++)
+    if ( s.charAt(i) == '(' )
+    {
+      while ( i > 0 && s.charAt(i-1) == ' ' )
+        i--;
+      s = s.slice(0, i);
+      break;
+    }
+  var size = 3-deep;
+  if ( size < 2 )
+    size = 2;
+  if ( nr == curNr )
+    s = '<FONT face="Arial" color="#CC0000" size="' + size + '"><U>'+s+'</U></FONT>';
+  else
+    s = '<FONT face="Arial" size="' + size + '">'+s+'</FONT>';
+  if ( bold )
+    s = '<B>'+s+'</B>';
+  // Name
+  var s1 = '<TR' + id + '>';
+  for (var j = 0; j < sGit.length; j++)
+    s1 += (j ? '>&nbsp;</TD>' : '') + '<TD background="' + base + '../data/g' + sGit.charAt(j) + '.gif"'+(j != sGit.length ? ' width="19"':'');
+  s1 += ' valign="top">' +
+      HistoryPlop(TopicDuration[nr], TopicLast[nr], nr, "", pm + SLP_L(M_TEXT, nr, 0)) + '</TD>' +
+      '<TD colspan="' + (10-deep) + '" valign="bottom"><A href="javascript:top.control.SetTopic(' + nr + ')" ' +
+      MouseTip(Name[nr]) +'>' +
+      s + '</A></TD></TR>\r\n';
+  return s1;
+}
+
+var LastScrollTop;
+
+function ShowCont()
+{
+  // calculate LastDeep
+  for (var i = 0; i <= curNr; i++)
+    LastDeep[Deep[i]] = i;
+  for (var i = (curNr == -1) ? 0 : Deep[curNr]+1; i <= MAX_DEEP; i++)
+    LastDeep[i] = -1;
+  // write contens
+  if ( !top.data.contens || !top.data.contens.document )
+    return;
+  var doc = top.data.contens.document;
+  if ( !doc.body )
+  {
+    setTimeout("ShowCont()", 50);
+    return;
+  }
+  LastScrollTop = doc.body.scrollTop ? doc.body.scrollTop : 0;
+  doc.open();
+  doc.writeln(NO_LINKDEKO,
+    '<body bgcolor="#F5F5DC" link="#003366" vlink="#003366" style="margin-top:4px; margin-bottom:4px;">',
+  '<TABLE cellpadding=1 cellspacing=0 border=0 width="100%">\r\n');
+  var deep = -1;
+  var sGit;
+  var LastFlag = false;
+  for (var i = 0; i < nTopic; i++)
+  {
+    var LT = (LastDeep[Deep[i]] == i) ? 1 : 0;
+    if ( Deep[i] <= deep + 1 )
+    {
+      if ( (LT || IsOpen[i]) && i != KeepCurClosed1 )
+        deep = Deep[i];
+      else if ( Deep[i] <= deep )
+        deep = Deep[i]-1;
+      var pm = "";
+      if ( i+1 < nTopic && Deep[i+1] > Deep[i] )
+        pm = ( deep == Deep[i] ) ? "m" : "p";
+      if ( Deep[i] == 0 )
+        sGit = (pm == "m") ? "3" : "0";
+      else
+        sGit = sGit.substr(0, Deep[i]-1)+(aLastTopic[i] == 1 ? "1" : "5")+(pm == "m" ? "6" : "2");
+      var id = "";
+      if ( i == curNr )
+      {
+        id = ' id="cur"';
+        LastFlag = (pm == "m") ? true : false;
+      }
+      else if ( LastDeep[0] == i )
+        id = ' id="cap"';
+      else if ( LastFlag && (i == nTopic-1 || Deep[i+1] <= Deep[curNr]) )
+      {
+        id = ' id="last"';
+        LastFlag = false;
+      }
+//      doc.write(ContensEntry(i, LT, Deep[i], pm+(GetTopicHaken(i)? "h" :""), id, sGit));
+      doc.write(ContensEntry(i, LT, Deep[i], pm, id, sGit));
+      sGit1 = "";
+      for (var j = 0; j < sGit.length; j++)
+        sGit1 += ((1*sGit.charAt(j)) > 2) ? "4" : "0";
+      sGit = sGit1;
+    }
+  }
+  doc.writeln('</TABLE>\r\n</body>');
+  doc.close();
+  InView();
+  KeepCurClosed2 = KeepCurClosed1;
+  KeepCurClosed1 = -1;
+}
+
+function InView()
+{
+  if ( !top.data.contens )
+    return;
+  if ( !top.data.contens.document.all.cur )
+    setTimeout("InView()", 1000);
+  else
+  {
+    var doc = top.data.contens.document;
+    var yCur = doc.all.cur.offsetTop;
+    var yCap = ( doc.all.cap ) ? doc.all.cap.offsetTop : yCur;
+    var yLast = ( doc.all.last ) ? doc.all.last.offsetTop+doc.all.last.offsetHeight : yCur + doc.all.cur.offsetHeight;
+    var h = doc.body.offsetHeight;
+    var p = LastScrollTop;
+    if ( yLast - yCap < h )
+    {
+      if ( p > yCap || p+h < yLast )
+        doc.body.scrollTop = yCap - (h - yLast + yCap) / 2;
+      else
+        doc.body.scrollTop = p;
+    }
+    else if ( yLast - yCur < h )
+      if ( p > yCur || p+h < yLast )
+        doc.body.scrollTop = yLast-h+20;
+      else
+        doc.body.scrollTop = p;
+    else
+      doc.body.scrollTop = yCur;
+  }
+}
+
+function ShowMat()
+{
+  if ( !top.data.material || !top.data.material.document )
+    return;
+  var doc = top.data.material.document;
+  doc.open();
+  doc.writeln(NO_LINKDEKO, '<body bgcolor="#F5F5DC" link="#003366" vlink="#003366" style="margin-top:4px; margin-bottom:4px;">',
+    '<table id="MatButtons" cellpadding="0" cellspacing="2" border="0">\r\n');
+  doc.writeln(
+    SecondBookEntry(endTest, M_END, endTest));
+  doc.writeln('</table>\r\n</body>');
+}
+
+function ShowTitle(sTitle)
+{
+  while ( !top.data.title );
+  var doc = top.data.title.document;
+  doc.open();
+  doc.writeln('<body bgcolor="#A4C2E0" style="margin-top:4px; margin-bottom:4px;">');
+  doc.writeln(
+    '<table border="0" cellpadding="0" cellspacing="0" width="100%" valign="middle">',
+    '<tr><td valign="middle" ondblclick="top.control.Master()"><FONT size="4" face="Arial" color="',
+    ((Mode % M_MEDIAOPEN) <= M_TEXT && !sTitle) ? '#CC0000' : '#228B22',
+    '"><B>',
+    sTitle ? sTitle : TitleText(),
+    '</B></FONT></td>');
+  if ( !top.data.contens )
+    doc.writeln('<td align="right" valign="middle"><B><font size="3" face="Arial">', Title, ' &nbsp; </font></B></td>');
+  doc.writeln('<TD width="80px" align="right">',
+    '<A href="', base, '../S2_Help/user_doc.htm" target="_blank" >',
+    '<img src="', base, '../data/help.gif" width="26" height="25" border=0 alt="Hilfe zu study2000"></A>&nbsp;',
+    '<A href="http://www.studierplatz2000.tu-dresden.de/" target="_blank">',
+    '<img src="', base, '../data/logo.gif" width="40" height="25" border=0 alt="Zur Studierplatz-Homepage"></A>',
+    '</TD></Tr></TABLE></BODY>');
+  doc.close();
+}
+
+var ColLight = new Array('#FFF8F8', '#10478F', '#A0D0FF', '#C0C0C0', '#A0DFDF');
+var ColDark  = new Array('#808770', '#90C0EF', '#10579F', '#404040', '#106F6F');
+
+function Button(text, action, width, colorStyle, comment)
+{
+  var colL = ColLight[colorStyle];
+  var colD = ColDark[colorStyle];
+  var s =  '<Button onclick="' + action + '" title="' + comment + '" id="a'+(ButtonCount*1)+
+    '" style="background-color:' + ButtonBgColor[colorStyle] + '; color:' + ButtonFontColor[colorStyle] +
+    '; border:3px solid '+colD+';'+
+    'border-left-color:'+colL+';border-top-color:'+colL +
+    ';font-family:Arial;font-weight:bold;'+(Is4 ? '' : 'height:30px;')+'">'+
+      '<span id=aa'+(ButtonCount*1)+'>'+text+'</span>'+
+      '</button>';
+  ButtonCount++;
+/*  var Com = comment.split("|");
+  var colL = ColLight[colorStyle];
+  var colD = ColDark[colorStyle];
+  var s =
+   '<INPUT type="BUTTON" value="' + text +
+    '" style="background-color:' + ButtonBgColor[colorStyle] + '; color:' + ButtonFontColor[colorStyle] +
+    '; border:3px solid '+colD+';'+
+    'border-left-color:'+colL+';border-top-color:'+colL +
+    ';font-family:' + (Com.length ? Com[1] : "Arial") +  ';font-weight:bold;'+(Is4 ? '' : 'height:30px;')+'"' +
+    'onClick="' + action + '" title="' + Com[0] + '">';*/
+  return s;
+}
+
+function GraphicButton(source, action, colorStyle, comment)
+{
+  var s =  '<Button onclick="' + action + '" border="0" ' +
+      'style="'+(Is4 ? '' : 'height:30px')+';vertical-align:top;padding:0px;margin:0px;background-color:' + ButtonBgColor[colorStyle] + ';border: 3px outset '+ColLight[colorStyle]+';"><img src="' + base + '../data/' + source + '.gif" alt="' + comment +
+    '" border="0"></button>';
+  return s;
+}
+
+var ButtonSep = '&nbsp; ';
+
+// control functions -----------------------------------------------
+
+var xd, yd;
+function SwitchContMode(noswitch)
+{
+  xd = -1;
+  if ( !noswitch )
+    ContMode = (ContMode + 1) % 3;
+  if ( OnLoading == 1)
+  {
+    var awin = window.open("", "data");
+    var doc = awin.document;
+  }
+  else
+  {
+    if ( top.data.display )
+    {
+      xd = top.data.display.pageXOffset;
+      yd = top.data.display.pageYOffset;
+    }
+    if ( top.data.contens )
+      ContWidth = top.data.contens.document.all.tags("body")[0].offsetWidth;
+    if ( top.data.material )
+      MatHeight = top.data.material.document.all.MatButtons.offsetHeight + 15;
+    var doc = top.data.document;
+  }
+  doc.open();
+  doc.writeln(
+    '<HTML>\r\n',
+    '<HEAD></HEAD>\r\n');
+  if ( ContMode == 0)
+    doc.writeln(
+      '<frameset cols="', ContWidth, ', *" border=2 frameborder=1 framespacing=2 bordercolor="#A4C2E0">\r\n',
+      '  <frameset rows="40,*,', MatHeight, '"  border=0 frameborder=0 framespacing=0>\r\n',
+      '     <frame src="' + base + '../data/dummy.htm" name="topic" scrolling=no>\r\n',
+      '     <frame src="' + base + '../data/dummy.htm" name="contens">\r\n',
+      '     <frame src="' + base + '../data/dummy.htm" name="material">\r\n',
+      '  </frameset>\r\n',
+      ViewAlways == true ?
+      '  <frameset rows="40,*,*" border=0 frameborder=1 framespacing=2>\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n'+
+      '    <frame src="' + base + ViewMedia + '" name="view">\r\n' :
+      '  <frameset rows="40,*"  border=0 frameborder=0 framespacing=0>\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>\r\n');
+  else if ( ContMode == 1 )
+    doc.writeln(
+      '<frameset cols="*, ', ContWidth, '" border=2 frameborder=1 framespacing=2 bordercolor="#A4C2E0">\r\n',
+      ViewAlways == true ?
+      '  <frameset rows="40,*,*" border=0 frameborder=1 framespacing=2>\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n'+
+      '    <frame src="' + base + ViewMedia + '" name="view" style="border-top:2px;frame-top:2px;">\r\n' :
+      '  <frameset rows="40,*"  border=0 frameborder=0 framespacing=0>\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n',
+      '  </frameset>\r\n',
+      '  <frameset rows="40,*,', MatHeight, '"  border=0 frameborder=0 framespacing=0>\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="topic" scrolling=no>\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="contens">\r\n',
+      '    <frame src="' + base + '../data/dummy.htm" name="material">\r\n',
+      '  </frameset>\r\n',
+      '</frameset>\r\n');
+  else
+    doc.writeln(
+      ViewAlways == true ?
+      '  <frameset rows="40,*,*" border=0 frameborder=1 framespacing=2>\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n'+
+      '    <frame src="' + base + ViewMedia + '" name="view">\r\n' :
+      '  <frameset rows="40,*"  border=0 frameborder=0 framespacing=0>\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="title">\r\n'+
+      '    <frame src="' + base + '../data/dummy.htm" name="display">\r\n',
+      '  </frameset>\r\n');
+  doc.writeln('</HTML>\r\n');
+  doc.close();
+  if ( OnLoading == 0 )
+    Mode %= M_MEDIAOPEN;
+  setTimeout("SwitchContModeFinish()", 500);
+  if ( OnLoading == 1 )
+    OnLoading = 0;
+  else
+    ShowButtons();
+}
+
+function SwitchContModeFinish()
+{
+  if ( !top.data.display )
+  {
+    setTimeout("SwitchContModeFinish()", 500);
+    return;
+  }
+  ShowCont();
+  ShowTitle();
+  ShowDisplay();
+  ShowMat();
+  // topic
+  if ( top.data.topic )
+  {
+    var doc = top.data.topic.document;
+    doc.open();
+    doc.writeln('<body bgcolor="#A4C2E0" link="#003366" vlink="#003366" style="margin-top:8px; margin-bottom:4px;">',
+     '<DIV onClick="top.control.SwitchAllOpen()" title="maximize/minimize table of content">',
+     '<FONT size="3" face="Arial"><NOBR><B>',
+      Title, '</B></NOBR></FONT></DIV>',
+     '</BODY>');
+    doc.close();
+  }
+  if ( xd != -1 )
+    top.data.display.scrollTo(xd, yd);
+  ShowButtons();
+}
+
+var LinkCount = 0;
+
+function StartMedia(type, nr, i)
+{
+  MedMode = type;
+  MedTopic = nr;
+  MedI = i;
+  if ( curNr != nr && M_TEXT <= Mode && Mode < M_TOCMEDIA )
+  {
+    MedListMode = -1;
+    curNr = nr;
+    ShowCont();
+  }
+  Mode = type+M_MEDIAOPEN;
+  AddProt("");
+  if ( !(GetMediaStyle(type) & 2) )
+  {
+    ShowButtons();
+    ShowTitle();
+  }
+  InitProt(Mode, nr, i);
+  var Med = GetMedia(type, nr)[i];
+  var src = Med[0];
+  if ( src == "" )
+  {
+    StartEmptyMedia(type, nr, i);
+    return;
+  }
+  else if ( src.substr(0,2) == "##" )
+  {
+    var Task = src.substr(2).split("#");
+    VisitMedia(Task[0], Task[1], Task[2]);
+    return;
+  }
+  if ( Med[0].search(/:/) == -1 )
+    src = base + Med[0];
+  if ( Mode == M_FOLIE+M_MEDIAOPEN && FolieMatch != 0 && IsGraphic(src) )
+  {
+    var doc = (GetMediaStyle(type) & 2) ? self.open("", GetMediaTitle(type)).document : top.data.display.document;
+    var xl = doc.all.tags("body")[0].offsetWidth;
+    var yl = doc.all.tags("body")[0].offsetHeight;
+    doc.open();
+    doc.writeln(DISPLAY_HEADER,
+      '<img src="', src,
+      (FolieMatch % 2 == 1) ? '" width="'+(xl-10) : "",
+      (FolieMatch >= 2) ? '" height="'+(yl-10) : "",
+      '" style="position:absolute;top:5;left:5;"></body>');
+    doc.close();
+  }
+  else if ( (Mode == M_VIDEO+M_MEDIAOPEN || Mode == M_VIDEO) && !IsHtml(src) )
+  {
+/*    if ( src.substr(src.length-4).toUpperCase() == '.MOV' )
+      top.data.display.open(src, (GetMediaStyle(type) & 2) ? GetMediaTitle(type) : "display");
+    else
+    {*/
+      if ( GetMediaStyle(type) & 2 )
+        var doc = self.open("", GetMediaTitle(type)).document;
+      else
+        var doc = top.data.display.document;
+      doc.open();
+      doc.writeln(DISPLAY_HEADER,
+        '<embed src="', src, '" autostart=true><P><FONT size=4 color=#0000FF>' +
+        Med[1], '</FONT><BR>', Med[2], '</P></BODY>');
+      doc.close();
+/*    }*/
+  }
+  else if ( (Mode == M_EXPERIMENT+M_MEDIAOPEN || Mode == M_EXPERIMENT) && !IsHtml(src) )
+  {
+    if ( GetMediaStyle(type) & 2 )
+      var doc = self.open("", GetMediaTitle(type)).document;
+    else
+      var doc = top.data.display.document;
+    doc.open();
+    doc.writeln(DISPLAY_HEADER,
+      '<A href="', src, '" autostart=true>Zum START hier klicken</A><P><FONT size=4 color=#0000FF>' +
+      Med[1], '</FONT><BR>', Med[2], '</P></BODY>');
+    doc.close();
+  }
+  else if ( Mode == M_LINK+M_MEDIAOPEN || Mode == M_LINK )
+  {
+    window.open(src, "link"+(LinkCount++));
+  }
+  else
+    window.open(src, GetMediaStyle(type) & 2 ? GetMediaTitle(type) : "display");
+}
+
+// service function ----------------------------------------------------------
+
+function ExplodeString(s)
+{
+  s = unescape(s);
+  var res = s;
+  res = res.replace(/<Y>/g, "</SPAN>");
+  res = res.replace(/<X/g, '<SPAN id=d');
+  res = res.replace(/X>/g, ' onDblClick="top.control.Note(this)" onClick="top.control.DispClick(this)">');
+
+  // insert notes
+  for (var i = 0; i < nNotes && Notes[i][0] <= curNr; i++)
+    if ( Notes[i][0] == curNr )
+    {
+      var Name = new RegExp("<SPAN id=d"+Notes[i][1]);
+      var j = res.search(Name);
+      if ( j == -1 ) continue;
+      var s1 = res.slice(j, res.length);
+      var j1 = s1.search(/<\/SPAN>/);
+      if ( j1 == -1 ) continue;
+      res = res.slice(0, j+j1) + NoteHTML(i) + res.slice(j+j1);
+    }
+
+  // insert marks
+  for (var i = 0; i < nMarks && Marks[i][0] <= curNr; i++)
+    if ( Marks[i][0] == curNr )
+    {
+      var Name = new RegExp("<SPAN id=d"+Marks[i][1]);
+      var j = res.search(Name);
+      if ( j == -1 ) continue;
+      res = res.slice(0, j) + '<SPAN style="background-color:' +
+      MarkColor[Marks[i][3]] + ';">' + res.slice(j);
+      Name = new RegExp("<SPAN id=d"+Marks[i][2]);
+      j = res.search(Name);
+      if ( j == -1 ) continue;
+      var s1 = res.slice(j, res.length);
+      var j1 = s1.search(/<\/SPAN>/);
+      if ( j1 == -1 ) continue;
+      res = res.slice(0, j+j1) + '</SPAN>' + res.slice(j+j1);
+  }
+  return res;
+}
+
+function PlaneCode()
+{
+  return '<DIV id=plane style="position:absolute; top:-250; left:25; z-index:1; padding:3px;color:#000000;font: bold small Arial;">plane</div>'
+}
+
+function TopicHook()
+{
+}
+
+// notes ----------------------------------------------------
+
+function Note(obj)
+{
+  if ( NoteAt != 0 )
+    return;
+  if ( Flight )
+    CrashDown();
+  NoteAt = obj;
+  NewDia("Notiz",
+    '<p><textarea name="NoteText" rows="5" cols="27"></textarea></p>\r\n' +
+    '<p><input type="button" onClick="ReturnWin.NoteOK(' + curNr +
+    ')" value="    OK    " target="control">' +
+    '<input type="button" onClick="ReturnWin.NoteCANCEL()" value="Abbruch"></p>\r\n',
+    " ",
+    280, 190, 100, 100, 0);
+    obj.insertAdjacentHTML("AfterEnd",
+    '<SPAN id=curPlop style="background-color:#FF0000;"><img src="' + base + '../data/note.gif" alt="Neue Notiz"></SPAN>');
+}
+
+function NoteOK(nr)
+{
+  var WordNr = NoteAt.id;
+  WordNr = WordNr.slice(1, WordNr.length);
+  var nr1 = InsertNewNote(new Array(nr, WordNr, DiaWin.fm.NoteText.value));
+  top.data.display.document.all.curPlop.outerHTML = NoteHTML(nr1);
+  DiaWin.close();
+  top.focus();
+  NoteAt = 0;
+}
+
+function NoteCANCEL(nr)
+{
+  top.data.display.document.all.curPlop.outerHTML = "";
+  DiaWin.close();
+  top.focus();
+  NoteAt = 0;
+}
+
+function EditNote(nr, obj)
+{
+  NoteAt = obj;
+  obj.style.setAttribute("backgroundColor", "#FF0000", false);
+  NoteNr = nr;
+  NewDia("Notiz bearbeiten",
+    '<p><textarea name="NoteText" rows="5" cols="27">'+Notes[nr][2]+'</textarea></p>\r\n' +
+    '<P align="right"><input type="button" onClick="ReturnWin.EditNoteOK(' + curNr +
+    ')" value="    OK    " target="control">' +
+    '<input type="button" onClick="ReturnWin.EditNoteERASE()" value="Löschen">' +
+    '<input type="button" onClick="ReturnWin.EditNoteCANCEL()" value="Abbruch"></P>\r\n',
+    " ",
+    280, 190, 100, 100, 0);
+}
+
+function EditNoteOK()
+{
+  Notes[NoteNr][2] = DiaWin.fm.NoteText.value;
+  DiaWin.close();
+  ShowDisplay();
+  top.focus();
+  NoteAt = 0;
+}
+
+function EditNoteERASE()
+{
+  DiaWin.close();
+  for (var i = NoteNr; i < nNotes-1; i++)
+    Notes[i] = Notes[i+1];
+  nNotes--;
+  ShowDisplay();
+  top.focus();
+  NoteAt = 0;
+}
+
+function EditNoteCANCEL()
+{
+  NoteAt.style.setAttribute("backgroundColor", "#FFFFFF", false);
+  DiaWin.close();
+  top.focus();
+  NoteAt = 0;
+}
+
+function NoteHTML(nr)
+{
+  return '<SPAN id=note' + nr + ' onClick="top.control.EditNote(' + nr + ', this)">' +
+    '<IMG src="' + base + '../data/note.gif" title="' + Notes[nr][2] + '">'+
+    '</SPAN>';
+}
+
+// Markieren ------------------------------------------------------------
+
+function TextMark()
+{
+  var s = "";
+  for (var i = 0; i < 16; i++)
+  {
+    if ( i % 8 == 0 )
+      s += '</TR><TR>';
+    s += '<TD bgcolor="' + MarkColor[i] + '" style="cursor:hand;"><P onClick="SetMarkColor(' +
+      i + ')">&nbsp;&nbsp;&nbsp;&nbsp;</P></TD>';
+  }
+  NewDia("Markierfarbe",
+    '<TABLE align="center" border = "2">\r\n' +
+    '<TR><TD colspan=8 align="center">Farbe wählen</TD>' +
+    s +
+    '</TR><TR>' +
+    '<TD style="cursor:hand;" colspan="8" align="center"><P onClick="SetMarkColor(16)">Löschen</P></TD>' +
+    '</TR></TABLE>',
+    '  function SetMarkColor(color)\r\n' +
+    '  {\r\n' +
+    '    if ( ReturnWin != "1" )\r\n' +
+    '      ReturnWin.MarkOK(color);\r\n' +
+    '  }\r\n',
+    260, 150, 100, 100, -1);
+}
+
+function MarkOK(color)
+{
+  DiaWin.close();
+  curMarkColor = color;
+  TakeOff("Erstes Wort", MarkColor[curMarkColor]);
+  top.data.display.defaultStatus = "Klicken sie auf der erste zu markierende Wort."
+  PlaneMode = PM_MARK1;
+}
+
+function DispClick(obj)
+{
+  if ( PlaneMode == PM_MARK1 )
+  {
+    obj.style.setAttribute("backgroundColor", MarkColor[curMarkColor], false);
+    MarkFirst = obj;
+    top.data.display.defaultStatus = "Klicken sie nun auf das letzte zu markierende Wort.";
+    top.data.display.document.all.plane.innerHTML = "&nbsp; <FONT size=2>Letztes Wort</FONT>";
+    PlaneMode = PM_MARK2;
+  }
+  else if ( PlaneMode == PM_MARK2 )
+  {
+    CrashDown();
+    InsertNewMark(new Array(curNr, MarkFirst.id.slice(1, MarkFirst.id.length), obj.id.slice(1, obj.id.length), curMarkColor));
+    MarkFirst.style.removeAttribute("backgroundColor", false);
+    obj.insertAdjacentHTML("AfterEnd", "</SPAN>");
+    top.data.display.defaultStatus = "";
+    var s = top.data.display.document.all.TheBody.innerHTML;
+    var Name = new RegExp("<SPAN id="+MarkFirst.id);
+    var j = s.search(Name);
+    if ( j == -1 ) return;
+    top.data.display.document.all.TheBody.innerHTML =
+      s.slice(0, j) + '<SPAN style="background-color:' +
+      MarkColor[curMarkColor] + ';">' + s.slice(j, s.length);
+  }
+  else if ( PlaneMode == PM_NOTE )
+  {
+    CrashDown();
+    Note(obj);
+  }
+}
+
+// aufgabe ---------------------------------------------------------------------------------
+
+function HintWindow(title, text)
+{
+  NewDia(title,
+    '<FONT color="#CC0000"><B>' + title + ':</B></FONT><P>' +
+    text +
+    '<P align=right>\r\n' +
+    '<INPUT type="BUTTON" value="Schließen" onClick="self.close()"></P>',
+    "",
+    420, 250, 100, 100, 0);
+}
+
+// plane -----------------------------------------------------------------------------------
+
+function TakeOff(token, col)
+{
+  top.data.display.document.all.plane.style.backgroundColor = col;
+  top.data.display.document.all.plane.style.zIndex = 3;
+  top.data.display.document.all.plane.innerHTML = "&nbsp; <FONT size=2>" + token + "</FONT>";
+  Flight = 1;
+  top.data.display.Flight = 1;
+  Token = token;
+  top.data.display.document.all.TheBody2.style.setAttribute("cursor", "hand");
+}
+
+function CrashDown()
+{
+  Flight = 0;
+  top.data.display.Flight = 0;
+  top.data.display.document.all.plane.style.left = -100;
+  top.data.display.document.all.plane.style.top = -250;
+  top.data.display.document.all.plane.style.zIndex = 1;
+  top.data.display.document.all.plane.setAttribute("bgcolor", "#FFA000", false);
+  top.data.display.document.all.TheBody2.style.setAttribute("cursor", "auto");
+  top.data.display.defaultStatus = "";
+  PlaneMode = 0;
+}
+
+// Common dialog window ------------------------------------------------------------
+
+var DiaWin;
+
+var DoFocus = -1;
+
+function NewDia(title, body, script, width, height, x, y, doFocus)
+{
+  DiaWin = window.open("", "DiaWin","resizable=yes,width=" + width + ",height=" + height);
+  var doc = DiaWin.document;
+  doc.close();
+  doc.open();
+  doc.writeln(
+    '<HEAD><TITLE>' + title + '</TITLE></HEAD>\r\n',
+    DIALOG_HEADER,
+    '<DIV id=dia><font face="Arial">\r\n',
+    '<FORM name="frm" onsubmit="return false;">' +  body, '\r\n</FORM>',
+    '</font></DIV>',
+    '</BODY>\r\n',
+    '<SC' + 'RIPT type="text/javascript"><!-- \r\n',
+    '  window.resizeTo(dia.offsetWidth < ', width-10, '? ', width+10, ' : dia.offsetWidth+20, dia.offsetHeight+50);\r\n',
+    '  var fm = document.frm;\r\n',
+    '  var ReturnWin = "1";\r\n',
+    script,
+    '\r\n',
+    '--></SC', 'RIPT>\r\n',
+    '</HTML>');
+  doc.close();
+  DiaWin.focus();
+  DoFocus = doFocus;
+  if ( script != "" )
+    self.setTimeout('SetDiaReturnWin()', 500);
+}
+
+function SetDiaReturnWin()
+{
+  if ( !DiaWin.closed )
+    if ( DiaWin.ReturnWin == "1")
+    {
+      DiaWin.ReturnWin = top.control;
+      if ( DoFocus != -1 )
+        DiaWin.document.frm.elements[DoFocus].focus();
+    }
+    else
+      setTimeout('SetDiaReturnWin()', 200);
+}
+
+
+
+// LEVELING ---------------------------------------------------------
+
+function ShowCountDown(s)
+{
+  if ( document.all.countdown )
+    document.all.countdown.innerHTML=s;
+}
+
+function SetEFString(s)
+{
+  if ( document.all.efString )
+    document.all.efString.innerHTML=s;
+}
+
+// initialisieren -----------------------------------------------------------------
+
+var CSS_TEXT =
+  '<style type="text/css">\r\n' +
+  ' body { font-family:Arial; color:#003366; background-color:#F5F5DC }\r\n' +
+  '</style>\r\n'
+
+var base = top.control.location.href;
+var l = base.length;
+while ( base.charAt(l-1) != '/' && base.charAt(l-1) != '\\' && l > 0 )
+{
+  base = base.substr(0, l-1);
+  l--;
+}
+base = base.replace(/\/\\\\/, "\\\\");
+
+Init();
+
+// End script hiding --></script>
+</html>

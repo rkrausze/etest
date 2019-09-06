@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/etest/db" VERSION="20070228" COMMENT="XMLDB file for Moodle mod/etest"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="etest" COMMENT="Base data for etest instances" NEXT="etest_exblock">
+      <FIELDS>
+        <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true"              SEQUENCE="true"                          NEXT="course"/>
+        <FIELD NAME="course"        TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" PREVIOUS="id"           NEXT="name"/>
+        <FIELD NAME="name"          TYPE="char" LENGTH="255"    NOTNULL="true"                              SEQUENCE="false" PREVIOUS="course"       NEXT="intro"/>
+        <FIELD NAME="intro"         TYPE="text" LENGTH="big"    NOTNULL="false"                             SEQUENCE="false" COMMENT="General introduction of the newmodule activity" PREVIOUS="name" NEXT="introformat"/>
+        <FIELD NAME="introformat"   TYPE="int"  LENGTH="4"      NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="timeopen"/>
+        <FIELD NAME="timeopen"      TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" PREVIOUS="introformat"  NEXT="timeclose"/>
+        <FIELD NAME="timeclose"     TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" PREVIOUS="timeopen"     NEXT="introref"/>
+        <FIELD NAME="introref"      TYPE="char" LENGTH="255"    NOTNULL="true"                              SEQUENCE="false" PREVIOUS="timeclose"    NEXT="timelimit"/>
+        <FIELD NAME="timelimit"     TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" PREVIOUS="introref"     NEXT="flags"/>
+        <FIELD NAME="flags"         TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" PREVIOUS="timelimit"    NEXT="subuserdata"/>
+        <FIELD NAME="subuserdata"   TYPE="text" LENGTH="small"  NOTNULL="false"                             SEQUENCE="false" PREVIOUS="flags"        NEXT="subuserprotname"/>
+        <FIELD NAME="subuserprotname" TYPE="char" LENGTH="255"  NOTNULL="false"                             SEQUENCE="false" PREVIOUS="subuserdata" NEXT="maxsession"/>
+        <FIELD NAME="maxsession"    TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" PREVIOUS="subuserprotname" NEXT="printform"/>
+        <FIELD NAME="printform"     TYPE="text" LENGTH="small"  NOTNULL="false"                             SEQUENCE="false" PREVIOUS="maxsession"   NEXT="password"/>
+        <FIELD NAME="password"      TYPE="char" LENGTH="255"    NOTNULL="true"                              SEQUENCE="false" PREVIOUS="printform"    NEXT="subnet"/>
+        <FIELD NAME="subnet"        TYPE="char" LENGTH="255"    NOTNULL="true"                              SEQUENCE="false" PREVIOUS="password"     NEXT="timecreated"/>
+        <FIELD NAME="timecreated"   TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" PREVIOUS="subnet"       NEXT="timemodified"/>
+        <FIELD NAME="timemodified"  TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for etest"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="etest_exblock" COMMENT="Data for etest exercise blocks" PREVIOUS="etest" NEXT="etest_ex">
+      <FIELDS>
+        <FIELD NAME="id"        TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true"                SEQUENCE="true"                    NEXT="etest"/>
+        <FIELD NAME="etest"     TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false"  PREVIOUS="id"    NEXT="name"/>
+        <FIELD NAME="name"      TYPE="char" LENGTH="255"  NOTNULL="true" SEQUENCE="false"                                 PREVIOUS="etest" NEXT="minpoints"/>
+        <FIELD NAME="minpoints" TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true" DEFAULT="0"    SEQUENCE="false"  PREVIOUS="name"  NEXT="pos"/>
+        <FIELD NAME="pos"       TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true" DEFAULT="0"    SEQUENCE="false"  PREVIOUS="minpoints"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for etest exblock" NEXT="etest"/>
+        <KEY NAME="etest" TYPE="foreign" FIELDS="etest" REFTABLE="etest" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="etest_ex" COMMENT="Data for an etest exercise" PREVIOUS="etest_exblock" NEXT="etest_exalt">
+      <FIELDS>
+        <FIELD NAME="id"        TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true"                SEQUENCE="true"                      NEXT="exblock"/>
+        <FIELD NAME="exblock"   TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false"  PREVIOUS="id"      NEXT="name"/>
+        <FIELD NAME="name"      TYPE="char" LENGTH="255"  NOTNULL="true"                                SEQUENCE="false"  PREVIOUS="exblock" NEXT="points"/>
+        <FIELD NAME="points"    TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true" DEFAULT="0"    SEQUENCE="false"  PREVIOUS="name"    NEXT="flags"/>
+        <FIELD NAME="flags"     TYPE="int"  LENGTH="1"    NOTNULL="true" UNSIGNED="true" DEFAULT="0"    SEQUENCE="false"  PREVIOUS="points"  NEXT="pos"/>
+        <FIELD NAME="pos"       TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true" DEFAULT="0"    SEQUENCE="false"  PREVIOUS="flags"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for etest exblock" NEXT="exblock"/>
+        <KEY NAME="exblock" TYPE="foreign" FIELDS="exblock" REFTABLE="etest_exblock" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="etest_exalt" COMMENT="Data for an etest exercise alternative" PREVIOUS="etest_ex" NEXT="etest_grade">
+      <FIELDS>
+        <FIELD NAME="id"        TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true"                SEQUENCE="true"                      NEXT="ex"/>
+        <FIELD NAME="ex"        TYPE="int"  LENGTH="10"   NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false" PREVIOUS="id"       NEXT="filename"/>
+        <FIELD NAME="filename"  TYPE="char" LENGTH="255"  NOTNULL="true"                                SEQUENCE="false" PREVIOUS="ex"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for etest exalt" NEXT="ex"/>
+        <KEY NAME="ex" TYPE="foreign" FIELDS="ex" REFTABLE="etest_ex" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="etest_grade" COMMENT="Grading data for etests" PREVIOUS="etest_exalt" NEXT="etest_session">
+      <FIELDS>
+        <FIELD NAME="id"        TYPE="int"  LENGTH="10"    NOTNULL="true" UNSIGNED="true"                SEQUENCE="true"                        NEXT="etest"/>
+        <FIELD NAME="etest"     TYPE="int"  LENGTH="10"    NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false"  PREVIOUS="id"        NEXT="shortname"/>
+        <FIELD NAME="shortname" TYPE="char" LENGTH="255"   NOTNULL="true" SEQUENCE="false"                                 PREVIOUS="etest"     NEXT="longname"/>
+        <FIELD NAME="longname"  TYPE="char" LENGTH="255"   NOTNULL="true" SEQUENCE="false"                                 PREVIOUS="shortname" NEXT="addtext"/>
+        <FIELD NAME="addtext"   TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false"                                 PREVIOUS="longname"  NEXT="minpoints"/>
+        <FIELD NAME="minpoints" TYPE="int"  LENGTH="10"    NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false"  PREVIOUS="addtext" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for etest exblock" NEXT="etest"/>
+        <KEY NAME="etest" TYPE="foreign" FIELDS="etest" REFTABLE="etest" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="etest_session" COMMENT="details about an etest session" PREVIOUS="etest_grade" NEXT="etest_action">
+      <FIELDS>
+        <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true"               SEQUENCE="true"                        NEXT="etest"/>
+        <FIELD NAME="etest"         TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true"  DEFAULT="0"  SEQUENCE="false" PREVIOUS="id"         NEXT="userid"/>
+        <FIELD NAME="userid"        TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true"  DEFAULT="0"  SEQUENCE="false" PREVIOUS="etest"      NEXT="data"/>
+        <FIELD NAME="data"          TYPE="text" LENGTH="small"  NOTNULL="false"                               SEQUENCE="false" PREVIOUS="userid"     NEXT="starttime"/>
+        <FIELD NAME="starttime"     TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true"  DEFAULT="0"  SEQUENCE="false" PREVIOUS="data"       NEXT="endtime"/>
+        <FIELD NAME="endtime"       TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true"  DEFAULT="0"  SEQUENCE="false" PREVIOUS="starttime"  NEXT="excombi"/>
+        <FIELD NAME="excombi"       TYPE="text" LENGTH="small"  NOTNULL="false"                               SEQUENCE="false" PREVIOUS="endtime"    NEXT="addpoints"/>
+        <FIELD NAME="addpoints"     TYPE="int"  LENGTH="6"      NOTNULL="true"  UNSIGNED="false" DEFAULT="0"  SEQUENCE="false" PREVIOUS="excombi"    NEXT="points"/>
+        <FIELD NAME="points"        TYPE="int"  LENGTH="6"      NOTNULL="false" UNSIGNED="false"              SEQUENCE="false" PREVIOUS="addpoints"  NEXT="grade"/>
+        <FIELD NAME="grade"         TYPE="int"  LENGTH="10"     NOTNULL="false" UNSIGNED="true"               SEQUENCE="false" PREVIOUS="points"     NEXT="exstates"/>
+        <FIELD NAME="exstates"      TYPE="text" LENGTH="small"  NOTNULL="false"                               SEQUENCE="false" PREVIOUS="grade"      NEXT="recalcstates"/>
+        <FIELD NAME="recalcstates"  TYPE="text" LENGTH="small"  NOTNULL="false"                               SEQUENCE="false" PREVIOUS="exstates"   NEXT="recalcdate"/>
+        <FIELD NAME="recalcdate"    TYPE="int"  LENGTH="10"     NOTNULL="false" UNSIGNED="true"               SEQUENCE="false" PREVIOUS="recalcstates" NEXT="recalcgrade"/>
+        <FIELD NAME="recalcgrade"   TYPE="int"  LENGTH="10"     NOTNULL="false" UNSIGNED="true"               SEQUENCE="false" PREVIOUS="recalcdate"   NEXT="recalcpoints"/>
+        <FIELD NAME="recalcpoints"  TYPE="int"  LENGTH="6"      NOTNULL="false" UNSIGNED="true"               SEQUENCE="false" PREVIOUS="recalcgrade"  NEXT="archivetag"/>
+        <FIELD NAME="archivetag"    TYPE="char" LENGTH="255"    NOTNULL="false"                               SEQUENCE="false" PREVIOUS="recalcpoints" NEXT="snapshot"/>
+        <FIELD NAME="snapshot"      TYPE="int"  LENGTH="10"     NOTNULL="false" UNSIGNED="true"               SEQUENCE="false" PREVIOUS="archivetag" NEXT="corrstarttime"/>
+        <FIELD NAME="corrstarttime" TYPE="int"  LENGTH="6"      NOTNULL="true"  UNSIGNED="false" DEFAULT="0"  SEQUENCE="false" PREVIOUS="snapshot"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"   TYPE="primary" FIELDS="id"  COMMENT="Primary key for etest_session"                             NEXT="etest"/>
+        <KEY NAME="etest"     TYPE="foreign" FIELDS="etest"     REFTABLE="etest"          REFFIELDS="id" PREVIOUS="primary"   NEXT="grade"/>
+        <KEY NAME="grade"     TYPE="foreign" FIELDS="grade"     REFTABLE="etest_grade"    REFFIELDS="id" PREVIOUS="etest" NEXT="snapshot"/>
+        <KEY NAME="snapshot"  TYPE="foreign" FIELDS="snapshot"  REFTABLE="etest_snapshot" REFFIELDS="id" PREVIOUS="grade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="etest_action" COMMENT="detail entry of an action of an etest session" PREVIOUS="etest_session" NEXT="etest_snapshot">
+      <FIELDS>
+        <FIELD NAME="id"        TYPE="int" LENGTH="10"  NOTNULL="true" UNSIGNED="true"                SEQUENCE="true"                        NEXT="session"/>
+        <FIELD NAME="session"   TYPE="int" LENGTH="10"  NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false" PREVIOUS="id"         NEXT="starttime"/>
+        <FIELD NAME="starttime" TYPE="int" LENGTH="10"  NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false" PREVIOUS="session"    NEXT="action"/>
+        <FIELD NAME="action"    TYPE="int" LENGTH="6"   NOTNULL="true" UNSIGNED="false" DEFAULT="-99" SEQUENCE="false" PREVIOUS="starttime"  NEXT="exid"/>
+        <FIELD NAME="exid"      TYPE="int" LENGTH="6"   NOTNULL="true" UNSIGNED="false" DEFAULT="-99" SEQUENCE="false" PREVIOUS="action"     NEXT="timestamp"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10"  NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false" PREVIOUS="exid"       NEXT="duration"/>
+        <FIELD NAME="duration"  TYPE="int" LENGTH="10"  NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false" PREVIOUS="timestamp"  NEXT="result"/>
+        <FIELD NAME="result"    TYPE="number" LENGTH="6"  DECIMALS="2" NOTNULL="false"                SEQUENCE="false" PREVIOUS="duration"   NEXT="data"/>
+        <FIELD NAME="data"      TYPE="text"  LENGTH="small" NOTNULL="false"                           SEQUENCE="false" PREVIOUS="result"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for etest_action"                           NEXT="session"/>
+        <KEY NAME="session" TYPE="foreign" FIELDS="session" REFTABLE="etest_session"  REFFIELDS="id" PREVIOUS="primary" NEXT="exid"/>
+        <KEY NAME="exid"    TYPE="foreign" FIELDS="exid"    REFTABLE="etest_ex"       REFFIELDS="id" PREVIOUS="session"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="etest_snapshot" COMMENT="snapshots of etest instances" PREVIOUS="etest_action">
+      <FIELDS>
+        <FIELD NAME="id"    TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true"                SEQUENCE="true"                        NEXT="etest"/>
+        <FIELD NAME="etest" TYPE="int"  LENGTH="10"     NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false" PREVIOUS="id"         NEXT="type"/>
+        <FIELD NAME="type"  TYPE="int"  LENGTH="2"      NOTNULL="true" UNSIGNED="true"  DEFAULT="0"   SEQUENCE="false" PREVIOUS="etest"      NEXT="data"/>
+        <FIELD NAME="data"  TYPE="text" LENGTH="small"  NOTNULL="false"                               SEQUENCE="false" PREVIOUS="type"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for etest_snapshot" NEXT="etest"/>
+        <KEY NAME="etest" TYPE="foreign" FIELDS="etest" REFTABLE="etest" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
