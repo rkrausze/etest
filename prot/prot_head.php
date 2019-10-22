@@ -43,11 +43,14 @@ $PAGE->set_title(format_string($etest->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 $PAGE->navbar->add(get_string('protocol', 'etest'));
-$PAGE->set_pagelayout('frametop');
+$PAGE->set_pagelayout('standard');
 $PAGE->blocks->show_only_fake_blocks();
 $PAGE->requires->js('/mod/etest/prot/ef_restore.js');
 
-echo str_replace('<a ', '<a target="_top" ', $OUTPUT->header());
+$sOut = $OUTPUT->header();
+$i = strpos($sOut, '</header>');
+$sOut = substr($sOut, 0, $i+9);
+echo str_replace('<a ', '<a target="_top" ', $sOut);
 
 $sessions = etest_prot_get_sessions($etest);
 
@@ -56,6 +59,8 @@ $sessions = etest_prot_get_sessions($etest);
     td, p { font-size:10pt;font-family:Arial;font-weight:bold }
     body, .path-mod-etest-prot, #page-header, #page-content { background-color:#FFFF99; }
     #page-content .region-content { overflow: hidden; padding: 0; }
+    body.drawer-open-left { margin-left: 0; }
+    footer { display: none; }
 </style>
 <form name="f" target="data" action="prot_userlist.php">
 <input type="hidden" name="a" value="<?php echo $etest->id ?>">
@@ -65,7 +70,7 @@ $sessions = etest_prot_get_sessions($etest);
 <input type="hidden" name="groupText" value="<?php echo $grouptext ?>">
 <input type="hidden" name="groupData" value="<?php echo $groupdata ?>">
 <input type="hidden" name="inArchive" value="">
-<table border="0" width="100%">
+<table border="0" width="100%" style="margin-top:50px">
     <tr>
         <td>
             <select name="protaction" onchange="Action(this.value)">
@@ -638,4 +643,7 @@ function decode_utf8(utftext) {
 //]]>
 </script>
 <?php
-echo $OUTPUT->footer();
+$sOut = $OUTPUT->footer();
+$i = strpos($sOut, '<footer');
+$sOut = substr($sOut, $i);
+echo $sOut;

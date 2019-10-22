@@ -1,2 +1,2 @@
 # etest
-Moodle Plufgin for E-Test
+Moodle Plugin for E-Test

@@ -152,7 +152,7 @@ foreach ($etests as $etest) {
 
     if ( $usereportcolumn ) {
         array_push($data,
-        "<a href=\"prot/prot.php?id=$etest->coursemodule\">".get_string("protocol", "etest")."</a>");
+        "<a href=\"prot/prot.php?id=$etest->coursemodule\" target=\"_blank\">".get_string("protocol", "etest")."</a>");
     }
 
     $table->data[] = $data;
