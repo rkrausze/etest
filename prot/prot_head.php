@@ -48,8 +48,12 @@ $PAGE->blocks->show_only_fake_blocks();
 $PAGE->requires->js('/mod/etest/prot/ef_restore.js');
 
 $sOut = $OUTPUT->header();
-$i = strpos($sOut, '</header>');
-$sOut = substr($sOut, 0, $i+9);
+$i1 = strpos($sOut, '<div id="page"');
+if ( $i1 !== FALSE )
+{
+  $i2 = strpos($sOut, '>', $i1);
+  $sOut = substr($sOut, 0, $i2+1);
+}
 echo str_replace('<a ', '<a target="_top" ', $sOut);
 
 $sessions = etest_prot_get_sessions($etest);
