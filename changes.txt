@@ -1,4 +1,8 @@
-Version 20191022100 - Fork to 3.3
+Version 2020031700
+=========================
+* Fix for prot_head layout in 3.7
+
+Version 2019102200 - Fork to 3.3
 =========================
 * Fix for Moodle 3.3+
 

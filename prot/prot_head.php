@@ -74,7 +74,7 @@ $sessions = etest_prot_get_sessions($etest);
 <input type="hidden" name="groupText" value="<?php echo $grouptext ?>">
 <input type="hidden" name="groupData" value="<?php echo $groupdata ?>">
 <input type="hidden" name="inArchive" value="">
-<table border="0" width="100%" style="margin-top:50px">
+<table border="0" width="100%">
     <tr>
         <td>
             <select name="protaction" onchange="Action(this.value)">
