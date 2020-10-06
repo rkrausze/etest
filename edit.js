@@ -36,7 +36,7 @@ function etest_settings_init(Y, str1, suData1, grData1, maxPoints1, initFocus) {
     // subuser
     // Fix für Moodle2.0
     if ( !Y.one('#id_useSubusers') ) {
-        Y.one(document.forms[0].useSubusers).set('id', 'id_useSubusers');
+        Y.one(etest_fetch_form().useSubusers).set('id', 'id_useSubusers');
     }
     Y.on('change', function(e) {
         Y.one('#id_subuserPanel').setStyle('display', Y.one('#id_useSubusers').get('checked') ? '' : 'none');
@@ -76,10 +76,10 @@ function etest_settings_init(Y, str1, suData1, grData1, maxPoints1, initFocus) {
             x = document.body.scrollLeft;
             y = document.body.scrollTop;
         }
-        var fm = document.forms[0];
+        var fm = etest_fetch_form();
         fm.redirectAdd.value = "xCursor="+x+"&yCursor="+y;
         return true;
-    }, '#mform1');
+    }, '#'+etest_fetch_form().id);
     // scroll to initFocus
     if ( initFocus ) {
         etest_show_exblock(initFocus[0]);
@@ -163,24 +163,26 @@ function su_addnew()
 {
     su_makesuData();
     var newSu = new Array();
-    newSu['name'] = document.forms.mform1['newsu_name'].value;
-    newSu['must'] = document.forms.mform1['newsu_must'].checked;
-    newSu['type'] = document.forms.mform1['newsu_type'].value;
-    newSu['comment'] = document.forms.mform1['newsu_comment'].value;
-    newSu['data'] = document.forms.mform1['newsu_data'].value;
+	var fm = etest_fetch_form();
+    newSu['name'] = fm['newsu_name'].value;
+    newSu['must'] = fm['newsu_must'].checked;
+    newSu['type'] = fm['newsu_type'].value;
+    newSu['comment'] = fm['newsu_comment'].value;
+    newSu['data'] = fm['newsu_data'].value;
     suData[suData.length] = newSu;
     show_suarea();
 }
 
 function su_makesuData()
 {
+	var fm = etest_fetch_form();
     for (var i = 0; i < suData.length; i++)
     {
-        suData[i]['name'] = document.forms.mform1['su_name_'+i].value;
-        suData[i]['must'] = document.forms.mform1['su_must_'+i].checked;
-        suData[i]['type'] = document.forms.mform1['su_type_'+i].value;
-        suData[i]['comment'] = document.forms.mform1['su_comment_'+i].value;
-        suData[i]['data'] = document.forms.mform1['su_data_'+i].value;
+        suData[i]['name'] = fm['su_name_'+i].value;
+        suData[i]['must'] = fm['su_must_'+i].checked;
+        suData[i]['type'] = fm['su_type_'+i].value;
+        suData[i]['comment'] = fm['su_comment_'+i].value;
+        suData[i]['data'] = fm['su_data_'+i].value;
     }
 }
 
@@ -249,12 +251,13 @@ function etest_grArea_del(id)
 
 function etest_read_form_grade(suffix) {
     var grade = new Array();
-    grade['id'] = document.forms.mform1['grade_id_'+suffix].value;
-    grade['minpoints'] = document.forms.mform1['grade_minpoints_'+suffix].value;
-    grade['shortname'] = document.forms.mform1['grade_shortname_'+suffix].value;
-    grade['longname'] = document.forms.mform1['grade_longname_'+suffix].value;
-    grade['addtext'] = document.forms.mform1['grade_addtext_'+suffix].value;
-    return grade;;
+	var fm = etest_fetch_form();
+    grade['id'] = fm['grade_id_'+suffix].value;
+    grade['minpoints'] = fm['grade_minpoints_'+suffix].value;
+    grade['shortname'] = fm['grade_shortname_'+suffix].value;
+    grade['longname'] = fm['grade_longname_'+suffix].value;
+    grade['addtext'] = fm['grade_addtext_'+suffix].value;
+    return grade;
 }
 
 function etest_grArea_addnew()
@@ -303,8 +306,8 @@ function etest_show_exblock(i) {
         el.style.display = "block";
     }
     document.getElementById("exblock_array_"+i).style.backgroundColor = "#FFFFFF";
-    document.forms[0].curExBlock.value = i;
-    document.forms[0].curEx.value = -1;
+    etest_fetch_form().curExBlock.value = i;
+    etest_fetch_form().curEx.value = -1;
     return true;
 }
 
@@ -336,7 +339,15 @@ function etest_show_ex(i, j) {
         }
     }*/
     document.getElementById("ex_array_"+i+"_"+j).style.backgroundColor = "#FFFFFF";
-    document.forms[0].curExBlock.value = i;
-    document.forms[0].curEx.value = j;
+    etest_fetch_form().curExBlock.value = i;
+    etest_fetch_form().curEx.value = j;
     return true;
+}
+
+function etest_fetch_form() {
+	for (var i = 0; i < document.forms.length; i++) {
+		if ( document.forms[i].timelimit )
+		  return document.forms[i];
+	}
+	return document.forms[0];
 }
