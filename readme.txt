@@ -1,5 +1,5 @@
 ======================================
-The E-Test module for Moodle 2.7 - 2.9
+The E-Test module for Moodle 2.7 - 4.1
 ======================================
 
     The E-Test-Module enables the teacher to create sequences of exercises/tasks/test (made by EF-Editor) that can be

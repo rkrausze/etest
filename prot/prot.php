@@ -27,7 +27,8 @@ require_once("../../../config.php");
 $headsize = optional_param('headsize', -1, PARAM_INT);
 
 if ( $headsize != -1 ) {
-    $headsize = 50+30; // override in moodle 3
+    //$headsize = 50+30; // override in moodle 3
+	$headsize = 69+30; // override in moodle 4
     echo '<frameset rows="', $headsize, ',*" border="0" frameborder="0" framespacing="0">',
         '<frame src="prot_head.php?', $_SERVER['QUERY_STRING'], '" name="control" scrolling="no">',
         '<frame src="prot_userlist.php?', $_SERVER['QUERY_STRING'], '" name="data">',

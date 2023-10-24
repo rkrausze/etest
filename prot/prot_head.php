@@ -65,6 +65,8 @@ $sessions = etest_prot_get_sessions($etest);
     #page-content .region-content { overflow: hidden; padding: 0; }
     body.drawer-open-left { margin-left: 0; }
     footer { display: none; }
+    #age-mod-etest-prot-prot .drawer { display: none; }
+    #age-mod-etest-prot-prot { margin-left: auto; }
 </style>
 <form name="f" target="data" action="prot_userlist.php">
 <input type="hidden" name="a" value="<?php echo $etest->id ?>">
@@ -117,7 +119,7 @@ foreach ($sessions as $session) {
 <script type="text/javascript">
 //<![CDATA[
 
-var f = document.forms[0];
+var f = document.forms['f'];
 var PHP = "";
 
 var Mode = "UserList";
