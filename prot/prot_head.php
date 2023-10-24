@@ -54,6 +54,18 @@ if ( $i1 !== FALSE )
   $i2 = strpos($sOut, '>', $i1);
   $sOut = substr($sOut, 0, $i2+1);
 }
+$sOut = str_replace('</head>',
+'<style type="text/css">
+	td, p { font-size:10pt;font-family:Arial;font-weight:bold }
+	body, .path-mod-stupla-prot, #page-header, #page-content { background-color:#FFFF99; }
+	#page-content .region-content { overflow: hidden; padding: 0; }
+	body.drawer-open-left { margin-left: 0; }
+	footer { display: none; }
+	#page-mod-etest-prot-prot .drawer { display: none; }
+	#page-mod-etest-prot-prot { margin-left: auto; }
+    #page { margin-left: 0 !important; margin-right: 0 !important; padding-left: 16px !important; padding-right: 16px !important; margin-top: 69px !important;}
+</style>'.
+'</head>', $sOut);
 echo str_replace('<a ', '<a target="_top" ', $sOut);
 
 $sessions = etest_prot_get_sessions($etest);
@@ -65,8 +77,8 @@ $sessions = etest_prot_get_sessions($etest);
     #page-content .region-content { overflow: hidden; padding: 0; }
     body.drawer-open-left { margin-left: 0; }
     footer { display: none; }
-    #age-mod-etest-prot-prot .drawer { display: none; }
-    #age-mod-etest-prot-prot { margin-left: auto; }
+    #page-mod-etest-prot-prot .drawer { display: none; }
+    #page-mod-etest-prot-prot { margin-left: auto; }
 </style>
 <form name="f" target="data" action="prot_userlist.php">
 <input type="hidden" name="a" value="<?php echo $etest->id ?>">
