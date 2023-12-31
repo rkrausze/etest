@@ -35,7 +35,7 @@ $PAGE->blocks->show_only_fake_blocks();
 
 $cond = '';
 if ( $exaltid != '' ) {
-    if ( strpos(strtolower($CFG->dbtype), 'postgres') === false ) {
+    if ( strpos(strtolower($CFG->dbtype), 'pgsql') === false ) {
         $cond = " AND CONCAT(',', ses.excombi, ',') REGEXP '[,;]".$exaltid."[,;]' ";
     } else {
         $cond = " AND ',' || ses.excombi || ',' SIMILAR TO '%[,;]".$exaltid."[,;]%' ";
