@@ -268,6 +268,7 @@ $string['userhist'] = 'History';
 $string['recalc'] = 'Recalc';
 $string['exoverview'] = 'Exercise oveview';
 $string['exentries'] = 'Exercise entries';
+$string['usermatrix'] = 'User matrix';
 
 $string['displayonpage'] = 'Display (HTML)';
 $string['downloadtext'] = 'Text-Export (CSV)';

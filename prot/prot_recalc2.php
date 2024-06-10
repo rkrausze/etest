@@ -45,11 +45,11 @@ $DB->set_field('etest_session', 'recalcdate', time(), array('id' => $sessionid))
 
 $i = 0;
 while ( true ) {
-    $actionid = optional_param('actionid'.$i, '');
+	$actionid = optional_param('actionid'.$i, '', PARAM_TEXT);
     if ( $actionid == '' ) {
         break;
     }
-    $pr = optional_param('pr'.$i, '');
+    $pr = optional_param('pr'.$i, '', PARAM_TEXT);
     if ( isset($pr) && $pr != '' ) {
         $data = $DB->get_field('etest_action', 'data', array('id' => $actionid));
         if ( isset($data) ) {

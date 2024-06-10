@@ -270,6 +270,7 @@ $string['userhist'] = 'Ablauf';
 $string['recalc'] = 'Recalc';
 $string['exoverview'] = 'Aufgabenübersicht';
 $string['exentries'] = 'Aufgabeneinträge';
+$string['usermatrix'] = 'User-Matrix';
 
 $string['displayonpage'] = 'Anzeigen (HTML)';
 $string['downloadtext'] = 'Text-Export (CSV)';

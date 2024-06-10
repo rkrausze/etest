@@ -99,6 +99,7 @@ $sessions = etest_prot_get_sessions($etest);
                 <option value="Recalc"><?php print_string('recalc', 'etest'); ?></option>
                 <option value="ExercisesOverview"><?php print_string('exoverview', 'etest'); ?></option>
                 <option value="ExercisesEntries"><?php print_string('exentries', 'etest'); ?></option>
+                <option value="UserMatrix"><?php print_string('usermatrix', 'etest'); ?></option>
                 <!--option value="ExCont">< ?php print_string('exercisesII', 'etest'); ?></option>
                 <option value="ExOverview">< ?php print_string('exercises overview', 'etest'); ?></option-->
             </select>
@@ -363,6 +364,17 @@ function ExOverview()
   SaveListHeight();
   window.open(PHP+'prot_exoverview.php?a=<?php echo $etest->id ?>&GroupNr='+GroupNr+'&Width='+
     (document.layer ? self.innerWidth : self.document.body.offsetWidth), "data");
+}
+
+// UserMatrix -----------------------
+
+function UserMatrix()
+{
+   // window.open(PHP+"prot_userlist.php?a=<?php echo $etest->id ?>", "data");
+   f.action = "prot_matrix.php";
+   f.target = "data";
+   f.sortinfo.value = "";
+   f.submit();
 }
 
 // aus den Tabellen

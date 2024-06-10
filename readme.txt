@@ -22,7 +22,7 @@ The E-Test module for Moodle 2.7 - 4.1
 
     This software is provided "AS IS" without a warranty of any kind.
 
-    This version (2016012200) is stable. If there are errors or problems pleese contact me via mail mail@krausze.de or
+    This version (2024061201) is stable. If there are errors or problems pleese contact me via mail mail@krausze.de or
     use https://sourceforge.net/p/studierplatz/tickets/new with sub project "Moodle-Module-E-Test".
 
     The version for Moodle 1.7 - 1.9 can be found under
